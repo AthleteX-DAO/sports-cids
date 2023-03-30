@@ -45,14 +45,14 @@ One of the key features of Fleek.co is its seamless integration with IPFS, which
 ![AthleteX's IPFS Implemented Workflow](assets/AX_IPFS.drawio.png)
 
 We use a Timer Triggered *Azure Function* that calls to our API endpoint on a recurring basis.
-Only the specific athletes of a market are gathered, defined by their player-id in the corrosponding [sports-cids](https://github.com/AthleteX-DAO/sports-cids) market file, with label list. This is a CID to a file on the Filecoin network that stores the Athlete's ID's.
-Within the funciton, the necessairy data for each athlete is collected, such as thier name, team, and statistics.
+Only the specific athletes of a market are gathered, defined by their player-id in the corresponding [sports-cids](https://github.com/AthleteX-DAO/sports-cids) market file, with label list. This is a CID to a file on the Filecoin network that stores the Athlete's ID's.
+Within the function, the necessary data for each athlete is collected, such as their name, team, and statistics.
 Using those statistics, the player's value is calculated using the market formula.
-Each athlete defined by our list is then added to a file directory and sent to NFT.Storage to be storaed on Filecoin.
+Each athlete defined by our list is then added to a file directory and sent to NFT.Storage to be stored on Filecoin.
 
-All data on Filecoin is public, so anyone with the CID of the files are able to view the contents.
+All data on Filecoin is public, so anyone with the CID of the files can view the contents.
 The tricky part is that the files change CIDs due to us uploading and deleting files with each Azure Function execution.
-That is why with each execution, the Azure Funcitons writes to repo [sports-cids](https://github.com/AthleteX-DAO/sports-cids) and updates that markets current CID.
+That is why with each execution, the Azure Functions writes to repo [sports-cids](https://github.com/AthleteX-DAO/sports-cids) and updates that markets current CID.
 
 To have a constant address, we have created an API Endpoint on Fleek.co. Fleek is currently moving to Fleek.xyz as a Web3 app, but until then, we are utilizing their complete Web2 interface. Fleek hosts our static website that routes requests from Filecoin to users. A users is able to route using the following syntax:
 
@@ -66,15 +66,15 @@ To have a constant address, we have created an API Endpoint on Fleek.co. Fleek i
 
 For example: */#/NFL/18882_history*
 
-To see currently available sports, go to the base route (and you will alos be able to see the current CIDs that are being requests to fetch the data).
+To see currently available sports, go to the base route (and you will also be able to see the current CIDs that are being requests to fetch the data).
 
-Currently, the api is hosted here at [icy-sun-3786.on.fleek.co](https://icy-sun-3786.on.fleek.co/), but this should be placed within the AthleteX domain soon.
+Currently, the API is hosted here at [icy-sun-3786.on.fleek.co](https://icy-sun-3786.on.fleek.co/), but this should be placed within the AthleteX domain soon.
 
 ----
 
 ## Adding New Markets
 
-Complete the following steps in the [AthleteX-DAO](https://github.com/AthleteX-DAO) orginization repos in GitHub.
+Complete the following steps in the [AthleteX-DAO](https://github.com/AthleteX-DAO) organization repos in GitHub.
 
 ### [sports-cids](https://github.com/AthleteX-DAO/sports-cids)
 
@@ -89,12 +89,12 @@ Complete the following steps in the [AthleteX-DAO](https://github.com/AthleteX-D
 ### [IPFS-API](https://github.com/AthleteX-DAO/IPFS-API)
 
 4. Next, we will be creating the Azure Function
-5. Start by creating a new Funciton in VS Code using the extension
-    1. For standardized naming, name it $MARKET_Function (for example: NFL_Funciton)
-    2. The Funciton should be Timer Triggered
+5. Start by creating a new Function in VS Code using the extension
+    1. For standardized naming, name it $MARKET_Function (for example: NFL_Function)
+    2. The Function should be Timer Triggered
     3. The CronJob schedule should be set to: `0 0 */1 * * *`
         1. This will run the job on the hour, every hour
-6. Copy over the the following files:
+6. Copy over the following files:
     1. `NFT_Storage_Requests.js`
     2. `SPORTSDATA_Requests.js`
 7. In Azure, add the new Secret Key: "STORAGE-$MARKET-PROD" (example: "STORAGE-NFT-PROD")
