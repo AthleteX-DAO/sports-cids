@@ -5,8 +5,8 @@
 - [Technology Stack](#technology-stack)
     - [IPFS](#ipfs)
     - [Filecoin](#filecoin)
-    - [NFT.Storage](#nft.storage)
-    - [Fleek.co](#fleek.co)
+    - [NFT.Storage](#nftstorage)
+    - [Fleek.co](#fleekco)
     - [Azure Functions](#azure-functions)
 - [Implementation](#implementation)
 - [Adding New Markets](#adding-new-markets)
@@ -42,7 +42,7 @@ One of the key features of Fleek.co is its seamless integration with IPFS, which
 
 ## Implementation
 
-![AthleteX's IPFS Implemented Workflow](assets\AX_IPFS.drawio.png)
+![AthleteX's IPFS Implemented Workflow](assets/AX_IPFS.drawio.png)
 
 We use a Timer Triggered *Azure Function* that calls to our API endpoint on a recurring basis.
 Only the specific athletes of a market are gathered, defined by their player-id in the corrosponding [sports-cids](https://github.com/AthleteX-DAO/sports-cids) market file, with label list. This is a CID to a file on the Filecoin network that stores the Athlete's ID's.
@@ -78,7 +78,39 @@ Complete the following steps in the [AthleteX-DAO](https://github.com/AthleteX-D
 
 ### [sports-cids](https://github.com/AthleteX-DAO/sports-cids)
 
+1. In NFT.Storage, use the AthleteX account to create a new API Key for the market
+2. Create a new json file that maps "athletes" to the list of Athlete IDs used
+    1. See the [NFL example](https://bafkreienw53gzof2e6ry6bdjl42comqybpzjxkljzmj4sgrudgu2dwjtvq.ipfs.nftstorage.link/)
+3. Create a new file in [sports-cids](https://github.com/AthleteX-DAO/sports-cids) for the new market
+    1. Also create a json with the fields "list" and "directory"
+    2. The "list" field should be set to the CID of the file you just created in NFT.Storage
+    3. The "directory" field should be set to "null"
+
 ### [IPFS-API](https://github.com/AthleteX-DAO/IPFS-API)
+
+4. Next, we will be creating the Azure Function
+5. Start by creating a new Funciton in VS Code using the extension
+    1. For standardized naming, name it $MARKET_Function (for example: NFL_Funciton)
+    2. The Funciton should be Timer Triggered
+    3. The CronJob schedule should be set to: `0 0 */1 * * *`
+        1. This will run the job on the hour, every hour
+6. Copy over the the following files:
+    1. `NFT_Storage_Requests.js`
+    2. `SPORTSDATA_Requests.js`
+7. In Azure, add the new Secret Key: "STORAGE-$MARKET-PROD" (example: "STORAGE-NFT-PROD")
+    1. The value of the key is the API key from NFT.Storage
+8. Collect the needed Athletes and Statistics from Sportsdata and calculate each formula
+9. Use the `updatePriceList` method in NFT_Storage_Requests.js to send the files to NFT.Storage
+10. Setup automated actions so that pushes to main updates Azure
+
 
 ### [fleek-api](https://github.com/AthleteX-DAO/fleek-api)
 
+11. You will be working here: [fleek-api](https://github.com/AthleteX-DAO/fleek-api)'s file `App.js`
+    1. Request the CIDs from [sports-cids](https://github.com/AthleteX-DAO/sports-cids)
+    2. Create 2 new routes:
+        1. "/${MARKET}"
+        2. "/${MARKET}/:id"
+    3. You should be able to use `GETContent` for the list item
+    4. You should be able to use `GETSubContent` for the directory item
+    5. Update `Home` so that it displays when it is loading the market and the CIDs of the two files
